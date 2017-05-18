@@ -10,7 +10,7 @@ module.exports = (config) => {
   }
 
   function getLastUpdated() {
-    return lastUpdated();
+    return lastUpdated;
   }
 
   function performUpdate() {
