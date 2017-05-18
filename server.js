@@ -20,5 +20,5 @@ app.use((req, res) => {
 // start the app
 updater.start();
 app.listen(config.port, () => {
-  console.log('Listening on port %d', config.port);
+  console.log('Listening on port %s', config.port);
 });
