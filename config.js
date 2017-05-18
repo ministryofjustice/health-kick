@@ -6,7 +6,7 @@ function get(name, formatter = (x) => x) {
 }
 
 const config = {
-  port: Number(process.env.PORT || 3010),
+  port: process.env.PORT || 3010,
   target_url: get('DASHBOARD_TARGET'),
   target_token: get('DASHBOARD_TOKEN'),
   app_id: get('APPINSIGHTS_APP_ID'),
