@@ -1,0 +1,18 @@
+{
+  "name": "ai-stats-exposer",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "6.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Glen Mailer <glenjamin@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.3",
+    "morgan": "^1.8.1",
+    "superagent": "^3.5.2"
+  }
+}
