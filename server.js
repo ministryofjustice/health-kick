@@ -1,24 +1,23 @@
-var express = require('express');
-var morgan = require('morgan');
+const express = require('express');
+const morgan = require('morgan');
 
-var config = require('./config');
-var updater = require('./updater')(config);
+const config = require('./config');
 
-var app = express();
+const app = express();
 
 app.use(morgan('short'));
 
-app.get('/last-updated', (req, res) => {
-  res.json({at: updater.getLastUpdated()});
+app.get('/health', (req, res) => {
+  res.json({healthy: true});
 });
+
+app.use(require('./proxy'));
 
 app.use((req, res) => {
   res.status = 404;
   res.json({error: "not-found"});
 });
 
-// start the app
-updater.start();
 app.listen(config.port, () => {
   console.log('Listening on port %s', config.port);
 });

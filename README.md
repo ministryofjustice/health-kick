@@ -1,4 +1,6 @@
-# Azure App Insights Stats Exposer
+# Health Kick
+
+Highly specific HTTP proxy for exposing health endpoints that live behind firewalls.
 
 ### Setup
 
@@ -8,14 +10,15 @@
 
 ### Config
 
-* `DASHBOARD_TARGET` Root URL of the smashing instance to POST to
-* `APPINSIGHTS_APP_ID` App ID from the application insights API access blade
-* `APPINSIGHTS_API_KEY` API Key rom the application insights API access blade
-* `APPINSIGHTS_UPDATE_INTERVAL` Time in minutes between updating the stats
+* `PORT` Where to listen
 
-Further config is then needed to specify the queries that will be run.
+### Usage
 
-You can set multiple variables with names of the form `APPINSIGHTS_QUERY_xxxxxxx` and values as a query which returns a table where the first column is a `key` and the second column is a value. These results will be POSTed to smashing widgets named `xxxxxxx_key`.
+`GET /http/<domain>`
+Will make a request to `http://<domain>/health` and proxy the response
+
+`GET /https/<domain>`
+Will make a request to `https://<domain>/health` and proxy the response
 
 ### License
 
