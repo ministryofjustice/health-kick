@@ -1,0 +1,8 @@
+branch-defaults:
+  master:
+    environment: health-kick-stage
+global:
+  application_name: health-kick-stage
+  default_region: eu-west-2
+deploy:
+  artifact: Dockerrun.aws.json
