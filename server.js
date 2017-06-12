@@ -5,6 +5,8 @@ const config = require('./config');
 
 const app = express();
 
+app.set('json spaces', 2);
+
 app.use(morgan('short'));
 
 app.get('/health', (req, res) => {
