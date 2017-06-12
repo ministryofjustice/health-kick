@@ -1,6 +1,6 @@
-const http = require('http');
 const express = require('express');
 
+const nock = require('nock');
 const supertest = require('supertest');
 
 const proxy = require('../proxy');
@@ -10,31 +10,112 @@ proxyApp.use(proxy);
 const request = supertest(proxyApp);
 
 describe('request proxying', () => {
-  let dummyServer;
-  afterEach(() => {
-    dummyServer.close();
+  before(() => {
+    nock.disableNetConnect();
+    nock.enableNetConnect('127.0.0.1');
   });
-  describe('http', () => {
-    function cannedResponse(statusCode, body) {
-      const app = express();
-      app.get('/health', (req, res) => {
-        res.status(statusCode).json(body);
-      });
-      dummyServer = http.createServer(app);
-      return new Promise((resolve, reject) => {
-        dummyServer.listen(() => {
-          const port = dummyServer.address().port;
-          resolve(`localhost:${port}`);
-        });
-      });
-    }
+  after(() => {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
 
-    it('should proxy a 200', () =>
-      cannedResponse(200, {healthy: true})
-        .then((target) =>
-          request.get(`/http/${target}`)
-            .expect(200, {healthy: true})
-        )
-    );
+  let scope;
+  afterEach(() => scope.done());
+
+  describe('http', () => {
+    it('should proxy a 200', () => {
+      scope = nock('http://app-dev.hmpps.dsd.io')
+        .get('/health').reply(200, {healthy: true});
+
+      return request.get(`/http/app-dev.hmpps.dsd.io`)
+        .expect(200, {healthy: true});
+    });
+    it('should proxy a 302 with headers', () => {
+      scope = nock('http://app-stage.hmpps.dsd.io')
+        .get('/health').reply(302, null, {
+          Location: '/somewhere'
+        });
+
+      return request.get(`/http/app-stage.hmpps.dsd.io`)
+        .expect(302)
+        .expect('Location', '/somewhere');
+    });
+    it('should proxy a 404', () => {
+      scope = nock('http://app.service.hmpps.dsd.io')
+        .get('/health').reply(404, {error: 'notfound'});
+
+      return request.get(`/http/app.service.hmpps.dsd.io`)
+        .expect(404, {error: 'notfound'});
+    });
+    it('should proxy a 500', () => {
+      scope = nock('http://something.hmpps.dsd.io')
+        .get('/health').reply(500, {error: 'it broke'});
+
+      return request.get(`/http/something.hmpps.dsd.io`)
+        .expect(500, {error: 'it broke'});
+    });
+    it('should reject non hmpps.dsd.io domain', () => {
+      return request.get(`/http/status.github.com`)
+        .expect(502, {error: 'denied'});
+    });
+    it('should 504 if backend isn\'t reachable', () => {
+      scope = nock('http://useful-app.hmpps.dsd.io')
+        .get('/health').replyWithError('connection failed');
+
+      return request.get(`/http/useful-app.hmpps.dsd.io`)
+        .expect(504, {error: 'connection failed'});
+    });
+  });
+
+  describe('https', () => {
+    it('should proxy a 200', () => {
+      scope = nock('https://app-dev.hmpps.dsd.io')
+        .get('/health').reply(200, {healthy: true});
+
+      return request.get(`/https/app-dev.hmpps.dsd.io`)
+        .expect(200, {healthy: true});
+    });
+    it('should proxy a 302 with headers', () => {
+      scope = nock('https://app-stage.hmpps.dsd.io')
+        .get('/health').reply(302, null, {
+          Location: '/somewhere'
+        });
+
+      return request.get(`/https/app-stage.hmpps.dsd.io`)
+        .expect(302)
+        .expect('Location', '/somewhere');
+    });
+    it('should proxy a 404', () => {
+      scope = nock('https://app.service.hmpps.dsd.io')
+        .get('/health').reply(404, {error: 'notfound'});
+
+      return request.get(`/https/app.service.hmpps.dsd.io`)
+        .expect(404, {error: 'notfound'});
+    });
+    it('should proxy a 500', () => {
+      scope = nock('https://something.hmpps.dsd.io')
+        .get('/health').reply(500, {error: 'it broke'});
+
+      return request.get(`/https/something.hmpps.dsd.io`)
+        .expect(500, {error: 'it broke'});
+    });
+    it('should reject non hmpps.dsd.io domain', () => {
+      return request.get(`/https/status.github.com`)
+        .expect(502, {error: 'denied'});
+    });
+    it('should 504 if backend isn\'t reachable', () => {
+      scope = nock('https://useful-app.hmpps.dsd.io')
+        .get('/health').replyWithError('connection failed');
+
+      return request.get(`/https/useful-app.hmpps.dsd.io`)
+        .expect(504, {error: 'connection failed'});
+    });
+  });
+
+  describe('other protocols', () => {
+    it('shouldn\'t allow other protocols', () => {
+      return request.get(`/gopher/app-dev.hmpps.dsd.io`)
+        .expect(404);
+    });
   });
 });
