@@ -6,4 +6,12 @@ machine:
 
 test:
   post:
-    - docker build .
+    - docker build --rm=false -t mojdigitalstudio/health-kick:$CIRCLE_SHA1 .
+
+deployment:
+  dockerhub:
+    branch: master
+    owner: noms-digital-studio
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - docker push mojdigitalstudio/health-kick:$CIRCLE_SHA1
