@@ -37,32 +37,17 @@ jobs:
               docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
               docker push mojdigitalstudio/health-kick:$BUILD_VERSION
             fi
-
-    # test:
-    #   post:
-    #     - >
-    #       docker build
-    #       --rm=false
-    #       -t mojdigitalstudio/health-kick:$BUILD_VERSION
-    #       --label 'maintainer=noms-studio-webops@digital.justice.gov.uk'
-    #       --label 'build.number=$CIRCLE_BUILD_NUM'
-    #       --label 'build.url=$CIRCLE_BUILD_URL'
-    #       --label 'build.gitref=$CIRCLE_SHA1'
-    #       .
-
-    # deployment:
-    #   dockerhub-and-stage:
-    #     branch: master
-    #     owner: noms-digital-studio
-    #     commands:
-    #       # Push image to docker hub
-    #       - docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    #       - docker push mojdigitalstudio/health-kick:$BUILD_VERSION
-
-    #       # Install AWS Elastic Beanstalk CLI
-    #       - sudo apt-get install python-dev
-    #       - sudo pip install awsebcli six
-
-    #       # Create manifest and deploy to Elastic Beanstalk environment
-    #       - yarn run plant-beanstalk $BUILD_VERSION
-    #       - eb deploy --process --verbose
+      - deploy:
+          name: Install elastic beanstalk CLI
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              sudo apt-get install python-pip python-dev
+              pip install --user 'six>-1.9.0' awsebcli --ignore-installed
+            fi
+      - deploy:
+          name: Deploy to Elastic Beanstalk Staging
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              yarn run plant-beanstalk $BUILD_VERSION
+              ~/.local/bin/eb deploy --process --verbose
+            fi
