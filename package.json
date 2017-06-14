@@ -16,7 +16,8 @@
     "convert-hrtime": "^2.0.0",
     "express": "^4.15.3",
     "http-proxy": "^1.16.2",
-    "morgan": "^1.8.1"
+    "morgan": "^1.8.1",
+    "superagent": "^3.5.2"
   },
   "devDependencies": {
     "mocha": "^3.4.2",
