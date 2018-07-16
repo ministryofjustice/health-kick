@@ -13,19 +13,33 @@ const proxySettings = {
 
 const router = express.Router();
 
-router.get('/:protocol(http|https)/:host', (req, res, next) => {
+router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
   const host = req.params.host;
   if (!validDomain(host)) {
     return res.status(502).json({error: 'denied'});
+  }
+
+  switch(req.params.probe) {
+    case "grafana":
+        var path = "/api/health"
+        break;
+    case "prometheus":
+        var path = "/prometheus/-/healthy"
+        break;
+    case "alertmanager":
+        var path = "/alertmanager/-/healthy"
+        break;
+    default:
+        var path = "/health"
   }
 
   const start = process.hrtime();
   const target = url.format({
     protocol: req.params.protocol,
     host: host,
-    pathname: '/health'
+    pathname: path
   });
-  // console.log("Proxying request to %s", target);
+  console.log("Proxying request to %s", target);
   const proxy = httpProxy.createProxyServer(proxySettings);
   proxy.web(req, res, { target });
   proxy.on('proxyRes', () => {
@@ -43,7 +57,9 @@ router.get('/:protocol(http|https)/:host', (req, res, next) => {
 });
 
 function validDomain(host) {
-  return host.endsWith('.hmpps.dsd.io');
+  if (host.endsWith('.noms.dsd.io') || host.endsWith('.hmpps.dsd.io')) {
+    return true
+  } 
 }
 
 module.exports = router;
