@@ -1,9 +1,12 @@
-version: 2
+defaults: &defaults
+  working_directory: ~/app
+  docker:
+    - image: circleci/node:10.15.0-browsers
 
+version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:6
+    <<: *defaults
     working_directory: ~/app
     steps:
       - run:
@@ -51,3 +54,12 @@ jobs:
               yarn run plant-beanstalk $BUILD_VERSION
               ~/.local/bin/eb deploy --process --verbose
             fi
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              ignore: /.*/
