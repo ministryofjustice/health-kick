@@ -57,7 +57,7 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
 });
 
 function validDomain(host) {
-  if (host.endsWith('.noms.dsd.io') || host.endsWith('.hmpps.dsd.io')) {
+  if (host.endsWith('.noms.dsd.io') || host.endsWith('.hmpps.dsd.io') || host.endsWith('.integration.dsd.io')) {
     return true
   } 
 }
