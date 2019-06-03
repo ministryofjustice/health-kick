@@ -29,6 +29,9 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
     case "alertmanager":
         var path = "/alertmanager/-/healthy"
         break;
+    case "info":
+      var path = "/info"
+      break;
     default:
         var path = "/health"
   }
