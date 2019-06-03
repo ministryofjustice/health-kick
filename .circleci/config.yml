@@ -46,7 +46,7 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               sudo apt-get update
               sudo apt-get --assume-yes install python3-pip python-dev
-              pip install --user 'six>-1.9.0' awsebcli --ignore-installed
+              pip3 install --user 'six>-1.9.0' awsebcli --ignore-installed
             fi
       - deploy:
           name: Deploy to Elastic Beanstalk Staging
