@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/app
   docker:
-    - image: circleci/node:10.15.0-browsers
+    - image: circleci/node:10.15.3-browsers
 
 version: 2
 jobs:
@@ -44,7 +44,8 @@ jobs:
           name: Install elastic beanstalk CLI
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              sudo apt-get install python-pip python-dev
+              sudo apt-get update
+              sudo apt-get --assume-yes install python3-pip python-dev
               pip install --user 'six>-1.9.0' awsebcli --ignore-installed
             fi
       - deploy:
