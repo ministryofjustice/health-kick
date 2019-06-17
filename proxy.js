@@ -32,11 +32,14 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
     case "info":
       var path = "/info"
       break;
-    case "communityapi":
+    case "communityapi-info":
+      var path = "/communityapi/info"
+      break;
+    case "communityapi-health":
       var path = "/communityapi/health"
       break;
-    case "communityapi/info":
-      var path = "/communityapi/info"
+    case "communityapi":
+      var path = "/communityapi/health"
       break;
     default:
         var path = "/health"
