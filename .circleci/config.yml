@@ -60,9 +60,9 @@ executors:
     working_directory: ~/app
 
 orbs:
-  aws-cli: circleci/aws-cli@0.1.13
-  kubernetes: circleci/kubernetes@0.3.0
-  helm: circleci/helm@0.1.2
+  aws-cli: circleci/aws-cli@0.1.18
+  kubernetes: circleci/kubernetes@0.10.1
+  helm: circleci/helm@0.2.3
 
 jobs:
   validate:
@@ -70,10 +70,10 @@ jobs:
     steps:
       - checkout
       - helm/install-helm-client:
-          version: v2.13.1
+          version: v3.0.0
       - run:
           name: Run helm lint
-          command: helm lint health-kick --values=values.yaml --values=secrets-example.yaml
+          command: helm lint health-kick --values=values-prod.yaml
           working_directory: helm_deploy
       - restore_cache:
           key: node_modules-{{ checksum "yarn.lock" }}-{{ checksum "package.json" }}
