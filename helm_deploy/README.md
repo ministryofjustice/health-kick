@@ -2,25 +2,25 @@
 ### Example test deploy command
 
 ```
-helm --namespace dps-toolkit --tiller-namespace dps-toolkit upgrade licences ./licences/ --install --values=values-dev.yaml --values=secrets-example.yaml --dry-run --debug
+helm --namespace dps-toolkit upgrade health-kick ./health-kick/ --install --values=values-prod.yaml --dry-run --debug
 ```
 
 Test template output:
 
 ```
-helm template ./licences/ --values=values-dev.yaml --values=secrets-example.yaml
+helm template ./licences/ --values=values-prod.yaml
 ```
 
 ### Rolling back a release
 Find the revision number for the deployment you want to roll back:
 ```
-helm --tiller-namespace dps-toolkit history licences -o yaml
+helm --namespace dps-toolkit history health-kick
 ```
-(note, each revision has a description which has the app version and circleci build URL)
+(note, each revision has a appVersion which has the app version used by circleci)
 
 Rollback
 ```
-helm --tiller-namespace dps-toolkit rollback licences [INSERT REVISION NUMBER HERE] --wait
+helm --namespace dps-toolkit rollback health-kick [INSERT REVISION NUMBER HERE] --wait
 ```
 
 ### Setup Lets Encrypt cert
