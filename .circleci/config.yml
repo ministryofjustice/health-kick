@@ -36,6 +36,7 @@ commands:
           name: Deploy to << parameters.env >>
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
+            sed -i "s/appVersion: \".*\"/appVersion: \"${APP_VERSION}\"/g" ~/git/helm_deploy/health-kick/Chart.yaml
             helm upgrade health-kick ~/git/helm_deploy/health-kick/  \
               --install --wait --force --reset-values --timeout 5m \
               --namespace=${KUBE_ENV_NAMESPACE} \
