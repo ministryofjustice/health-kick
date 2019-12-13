@@ -149,6 +149,7 @@ workflows:
               #only: master
       - deploy_prod:
           requires:
+            - validate 
             - build
           #filters:
             #branches:
