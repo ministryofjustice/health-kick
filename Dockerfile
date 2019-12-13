@@ -17,6 +17,7 @@ RUN yarn install --production --frozen-lockfile && \
 
 # Bake-in production environment variables
 ENV NODE_ENV=production
+ENV PORT=3000
 
 USER 2000
 
