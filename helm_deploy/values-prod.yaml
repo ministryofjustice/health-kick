@@ -13,6 +13,5 @@ ingress:
   enabled: true
   enable_whitelist: false
   host: health-kick.prison.service.justice.gov.uk
-  cert_secret: healthkick-cert
+  cert_secret: health-kick-cert
   path: /
-
