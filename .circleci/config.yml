@@ -37,7 +37,7 @@ commands:
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
             helm upgrade health-kick ~/git/helm_deploy/health-kick/  \
-              --install --wait --force --reset-values --timeout 10m \
+              --install --wait --force --reset-values --timeout 5m \
               --namespace=${KUBE_ENV_NAMESPACE} \
               --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
               --set image.tag="${APP_VERSION}"
