@@ -114,13 +114,13 @@ jobs:
             # Copy build-info.json from image
             docker run -it --rm mojdigitalstudio/health-kick:$APP_VERSION cat /app/build-info.json > build-info.json
 
-            #if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               #publish to docker hub as the tag
               docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
               docker tag mojdigitalstudio/health-kick:$APP_VERSION mojdigitalstudio/health-kick:latest
               docker push mojdigitalstudio/health-kick:$APP_VERSION
               docker push mojdigitalstudio/health-kick:latest
-            #fi
+            fi
       - persist_to_workspace:
           root: .
           paths:
@@ -140,11 +140,10 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - build
-      #- build:
-          #filters:
-            #branches:
-              #only: master
+      - build:
+          filters:
+            branches:
+              only: master
       - request-prod-approval:
           type: approval
           requires:
@@ -154,6 +153,6 @@ workflows:
           context: dps-toolkit
           requires:
             - request-prod-approval
-          #filters:
-            #branches:
-              #only: master
+          filters:
+            branches:
+              only: master
