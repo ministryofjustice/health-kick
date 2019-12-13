@@ -36,15 +36,12 @@ commands:
           name: Deploy to << parameters.env >>
           command: |
             APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            aws secretsmanager get-secret-value --secret-id ${AWS_SECRET_NAME} | jq -r .SecretString | \
-            helm upgrade health-kick ~/git/helm_deploy/health-kick/. \
-              --install --wait --force --reset-values --timeout 360 \
-              --tiller-namespace=${KUBE_ENV_NAMESPACE} \
+            helm upgrade health-kick ~/git/helm_deploy/health-kick/  \
+              --install --wait --force --reset-values --timeout 10m \
               --namespace=${KUBE_ENV_NAMESPACE} \
-              --description="${APP_VERSION} - ${CIRCLE_BUILD_URL}" \
               --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
-              --values - \
               --set image.tag="${APP_VERSION}"
+
 executors:
   deployer:
     docker:

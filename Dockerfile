@@ -18,5 +18,7 @@ RUN yarn install --production --frozen-lockfile && \
 # Bake-in production environment variables
 ENV NODE_ENV=production
 
+USER 2000
+
 CMD [ "node", "server.js" ]
 EXPOSE 3000
