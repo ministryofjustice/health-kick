@@ -128,7 +128,7 @@ jobs:
           paths:
             - build-info.json
 
-  deploy:
+  deploy_prod:
     executor: deployer
     steps:
       - deploy_to_env:
@@ -142,11 +142,12 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - build:
+      - build
+      #- build:
           #filters:
             #branches:
               #only: master
-      - deploy:
+      - deploy_prod:
           requires:
             - build
           #filters:
