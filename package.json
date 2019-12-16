@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "mocha",
-    "plant-beanstalk": "node scripts/plant-beanstalk.js"
+    "record-build-info": "node ./scripts/record-build-info"
   },
   "author": "Glen Mailer <glenjamin@gmail.com>",
   "license": "MIT",
