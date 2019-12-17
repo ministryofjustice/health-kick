@@ -144,15 +144,11 @@ workflows:
           filters:
             branches:
               only: master
-      - request-prod-approval:
-          type: approval
-          requires:
-            - validate
-            - build
       - deploy_prod:
           context: dps-toolkit
           requires:
-            - request-prod-approval
+            - validate
+            - build
           filters:
             branches:
               only: master
