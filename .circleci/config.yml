@@ -47,6 +47,8 @@ workflows:
           name: deploy_prod
           env: "prod"
           context: dps-toolkit
+          requires:
+            - build_docker
 
   scheduled:
     triggers:
