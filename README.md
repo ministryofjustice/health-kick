@@ -4,9 +4,8 @@ Highly specific HTTP proxy for exposing health endpoints that live behind firewa
 
 ### Setup
 
- * NodeJS 6+
- * Yarn 0.23.4+
- * `yarn install`
+ * NodeJS 12+
+ * `npm install`
 
 ### Config
 
