@@ -1,136 +1,31 @@
 version: 2.1
-commands:
-  setup:
-    description: "Install tools and configure kubectl"
-    steps:
-      - aws-cli/install
-      - kubernetes/install
-      - helm/install-helm-client:
-          version: v3.0.0
-      - run:
-          name: Setup kubectl
-          command: |
-            echo -n "${KUBE_ENV_CACERT}" | base64 -d > /tmp/cluster_ca.crt
-            kubectl config set-cluster "${KUBE_ENV_NAME}" \
-              --certificate-authority="/tmp/cluster_ca.crt" \
-              --server="https://api.${KUBE_ENV_NAME}"
-            kubectl config set-credentials circleci \
-              --token="${KUBE_ENV_TOKEN}"
-            kubectl config set-context circleci \
-              --cluster="${KUBE_ENV_NAME}" \
-              --user="circleci" \
-              --namespace="${KUBE_ENV_NAMESPACE}"
-            # confirm setup is ok
-            kubectl config use-context circleci
-  deploy_to_env:
-    parameters:
-      env:
-        type: string
-    steps:
-      - setup
-      - checkout:
-          path: ~/git
-      - attach_workspace:
-          at: ~/app
-      - deploy:
-          name: Deploy to << parameters.env >>
-          command: |
-            APP_VERSION=$(egrep buildNumber build-info.json  | awk -F"\"" '{print $4}')
-            sed -i "s/appVersion: \".*\"/appVersion: \"${APP_VERSION}\"/g" ~/git/helm_deploy/health-kick/Chart.yaml
-            helm upgrade health-kick ~/git/helm_deploy/health-kick/  \
-              --install --wait --force --reset-values --timeout 5m --history-max 50 \
-              --namespace=${KUBE_ENV_NAMESPACE} \
-              --values ~/git/helm_deploy/values-<< parameters.env >>.yaml \
-              --set image.tag="${APP_VERSION}"
-
-executors:
-  deployer:
-    docker:
-      - image: circleci/python:3
-    working_directory: ~/app
-  builder:
-    docker:
-      - image: circleci/node:10-browsers
-    working_directory: ~/app
-  test:
-    docker:
-      - image: circleci/node:10-browsers
-    working_directory: ~/app
 
 orbs:
-  aws-cli: circleci/aws-cli@0.1.18
-  kubernetes: circleci/kubernetes@0.10.1
-  helm: circleci/helm@0.2.3
+  hmpps: ministryofjustice/hmpps@1.0.0
 
 jobs:
   validate:
-    executor: builder
+    executor:
+      name: hmpps/node
+      tag: 12-buster-browsers
     steps:
       - checkout
-      - helm/install-helm-client:
-          version: v3.0.0
-      - run:
-          name: Run helm lint
-          command: helm lint health-kick --values=values-prod.yaml
-          working_directory: helm_deploy
       - restore_cache:
-          key: node_modules-{{ checksum "yarn.lock" }}-{{ checksum "package.json" }}
+          key: node_modules-{{ checksum "package-lock.json" }}-{{ checksum "package.json" }}
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: npm ci --no-audit
       - save_cache:
-          key: node_modules-{{ checksum "yarn.lock" }}-{{ checksum "package.json" }}
+          key: node_modules-{{ checksum "package-lock.json" }}-{{ checksum "package.json" }}
           paths:
             - ./node_modules
       - run:
           name: Run Tests
-          command: yarn test
-
-  build:
-    executor: deployer
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/app
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build container and publish to docker hub
-          command: |
-            DATE=$(date '+%Y-%m-%d')
-            APP_VERSION=${DATE}.${CIRCLE_BUILD_NUM}
-
-            docker build --rm=false . \
-              --build-arg BUILD_NUMBER=$APP_VERSION \
-              --build-arg GIT_REF=$CIRCLE_SHA1 \
-              --tag "mojdigitalstudio/health-kick:$APP_VERSION" \
-              --label "maintainer=dps-hmpps@digital.justice.gov.uk" \
-              --label "app.version=$APP_VERSION" \
-              --label "build.version=$APP_VERSION" \
-              --label "build.number=$CIRCLE_BUILD_NUM" \
-              --label "build.url=$CIRCLE_BUILD_URL" \
-              --label "build.gitref=$CIRCLE_SHA1"
-
-            # Copy build-info.json from image
-            docker run -it --rm mojdigitalstudio/health-kick:$APP_VERSION cat /app/build-info.json > build-info.json
-
-            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-              #publish to docker hub as the tag
-              docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-              docker tag mojdigitalstudio/health-kick:$APP_VERSION mojdigitalstudio/health-kick:latest
-              docker push mojdigitalstudio/health-kick:$APP_VERSION
-              docker push mojdigitalstudio/health-kick:latest
-            fi
+          command: npm test -- --maxWorkers=2
       - persist_to_workspace:
           root: .
           paths:
-            - build-info.json
-
-  deploy_prod:
-    executor: deployer
-    steps:
-      - deploy_to_env:
-          env: "prod"
+            - node_modules
 
 workflows:
   version: 2
@@ -140,15 +35,28 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - build:
+      - hmpps/build_docker:
+          name: build_docker
           filters:
             branches:
-              only: master
-      - deploy_prod:
-          context: dps-toolkit
+              only:
+                - master
           requires:
             - validate
-            - build
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          context: dps-toolkit
+          requires:
+            - build_docker
+
+  scheduled:
+    triggers:
+      - schedule:
+          cron: '0 7 * * 1-5'
           filters:
             branches:
-              only: master
+              only:
+                - master
+    jobs:
+      - hmpps/npm_security_audit
