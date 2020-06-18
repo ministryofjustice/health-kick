@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@1.0.0
+  hmpps: ministryofjustice/hmpps@1.1.0
 
 jobs:
   validate:
@@ -46,6 +46,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
+          retrieve_secrets: none
           context: dps-toolkit
           requires:
             - build_docker
