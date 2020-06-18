@@ -40,7 +40,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
           requires:
             - validate
       - hmpps/deploy_env:
@@ -58,6 +58,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - hmpps/npm_security_audit
