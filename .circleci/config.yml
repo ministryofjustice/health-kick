@@ -1,13 +1,17 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@2.2
+  hmpps: ministryofjustice/hmpps@3.0
+
+executors:
+  node:
+    docker:
+      - image: circleci/node:12-buster-browsers
 
 jobs:
   validate:
     executor:
-      name: hmpps/node
-      tag: 12-buster-browsers
+      name: node
     steps:
       - checkout
       - restore_cache:
@@ -46,7 +50,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
-          retrieve_secrets: none
           context:
             - hmpps-common-vars
             - dps-toolkit
