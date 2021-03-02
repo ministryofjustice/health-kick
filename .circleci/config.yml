@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@2.2
+  hmpps: ministryofjustice/hmpps@3.0
 
 jobs:
   validate:
@@ -46,7 +46,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
-          retrieve_secrets: none
           context:
             - hmpps-common-vars
             - dps-toolkit
