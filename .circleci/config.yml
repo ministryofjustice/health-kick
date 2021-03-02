@@ -6,7 +6,7 @@ orbs:
 jobs:
   validate:
     executor:
-      name: hmpps/node
+      name: circleci/node
       tag: 12-buster-browsers
     steps:
       - checkout
