@@ -1,12 +1,24 @@
-FROM node:12-buster-slim
-LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
+FROM node:14.15-buster as builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
-ARG NODE_ENV
 
-ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
-ENV GIT_REF ${GIT_REF:-dummy}
+RUN apt-get update && \
+    apt-get upgrade -y
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm ci --no-audit && \
+    export BUILD_NUMBER=${BUILD_NUMBER} && \
+    export GIT_REF=${GIT_REF} && \
+    npm run record-build-info
+
+RUN npm prune --production
+
+FROM node:14.15-buster-slim
+LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -16,20 +28,29 @@ RUN apt-get update && \
 RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser --gid 2000
 
+ENV TZ=Europe/London
+RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
+
 # Create app directory
+RUN mkdir /app && chown appuser:appgroup /app
+USER 2000
 WORKDIR /app
-COPY --chown=appuser:appgroup . .
 
-RUN npm ci --no-audit && \
-    export BUILD_NUMBER=${BUILD_NUMBER} && \
-    export GIT_REF=${GIT_REF} && \
-    npm run record-build-info
+COPY --from=builder --chown=appuser:appgroup \
+        /app/package.json \
+        /app/package-lock.json \
+        /app/build-info.json \
+        /app/config.js \
+        /app/proxy.js \
+        /app/server.js \
+        ./
 
-ENV NODE_ENV ${NODE_ENV:-production}
+COPY --from=builder --chown=appuser:appgroup \
+        /app/node_modules ./node_modules
+
+ENV NODE_ENV=production
 ENV PORT=3000
 
-USER 2000
-
 EXPOSE 3000
+USER 2000
 CMD [ "node", "server" ]
-
