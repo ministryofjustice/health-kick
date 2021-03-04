@@ -6,7 +6,7 @@ orbs:
 executors:
   node:
     docker:
-      - image: circleci/node:12-buster-browsers
+      - image: cimg/node:14.15-browsers
 
 jobs:
   validate:

@@ -3,7 +3,8 @@
   "version": "1.0.1",
   "private": true,
   "engines": {
-    "node": "12.x"
+    "npm": ">=6",
+    "node": ">=14.*"
   },
   "scripts": {
     "start": "node server.js",
@@ -14,16 +15,16 @@
   "author": "Glen Mailer <glenjamin@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "convert-hrtime": "^2.0.0",
-    "express": "^4.15.3",
+    "convert-hrtime": "^3.0.0",
+    "express": "^4.17.1",
     "http-proxy": "^1.18.1",
     "morgan": "^1.10.0",
-    "superagent": "^3.5.2"
+    "superagent": "^6.1.0"
   },
   "devDependencies": {
-    "audit-ci": "^3.0.1",
-    "mocha": "^6.2.3",
-    "nock": "^9.0.13",
-    "supertest": "^3.0.0"
+    "audit-ci": "^3.1.1",
+    "mocha": "^8.3.0",
+    "nock": "^13.0.10",
+    "supertest": "^6.1.3"
   }
 }
