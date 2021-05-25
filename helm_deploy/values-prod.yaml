@@ -15,3 +15,7 @@ ingress:
   host: health-kick.prison.service.justice.gov.uk
   cert_secret: health-kick-cert
   path: /
+
+# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service
