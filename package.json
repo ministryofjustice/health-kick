@@ -15,16 +15,16 @@
   "author": "Glen Mailer <glenjamin@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "convert-hrtime": "^3.0.0",
+    "convert-hrtime": "^5.0.0",
     "express": "^4.17.1",
     "http-proxy": "^1.18.1",
     "morgan": "^1.10.0",
     "superagent": "^6.1.0"
   },
   "devDependencies": {
-    "audit-ci": "^3.1.1",
-    "mocha": "^8.3.0",
-    "nock": "^13.0.10",
+    "audit-ci": "^4.1.0",
+    "mocha": "^9.0.0",
+    "nock": "^13.1.0",
     "supertest": "^6.1.3"
   }
 }
