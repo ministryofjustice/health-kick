@@ -3,18 +3,18 @@ const express = require('express');
 const nock = require('nock');
 const supertest = require('supertest');
 
-const proxy = require('../proxy');
+const proxy = require('./proxy');
 
 const proxyApp = express();
 proxyApp.use(proxy);
 const request = supertest(proxyApp);
 
 describe('request proxying', () => {
-  before(() => {
+  beforeAll(() => {
     nock.disableNetConnect();
     nock.enableNetConnect('127.0.0.1');
   });
-  after(() => {
+  afterAll(() => {
     nock.cleanAll();
     nock.enableNetConnect();
   });
