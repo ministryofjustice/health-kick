@@ -1,7 +1,7 @@
 const url = require('url');
 const express = require('express');
 const httpProxy = require('http-proxy');
-const convertHrtime = require('convert-hrtime');
+const convertHrtime = require('./convert-hrtime');
 
 const proxySettings = {
   secure: true,
