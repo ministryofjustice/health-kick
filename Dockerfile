@@ -1,4 +1,4 @@
-FROM node:14.15-buster as builder
+FROM node:14.17-buster as builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -17,7 +17,7 @@ RUN npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:14.15-buster-slim
+FROM node:14.17-buster-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apt-get update && \
@@ -43,6 +43,7 @@ COPY --from=builder --chown=appuser:appgroup \
         /app/config.js \
         /app/proxy.js \
         /app/server.js \
+        /app/convert-hrtime.js \
         ./
 
 COPY --from=builder --chown=appuser:appgroup \
