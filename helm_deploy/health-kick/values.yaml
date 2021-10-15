@@ -1,5 +1,27 @@
 ---
 # Values here are the same across all environments
+generic-service:
+  nameOverride: health-kick
+
+  image:
+    repository: quay.io/hmpps/health-kick
+    tag: latest
+    port: 3000
+
+  ingress:
+    enabled: true
+    tlsSecretName: health-kick-cert
+
+  livenessProbe:
+    httpGet:
+      path: /health
+
+  readinessProbe:
+    httpGet:
+      path: /health
+
+  env:
+    NODE_ENV: "production"
 
 generic-prometheus-alerts:
   targetApplication: health-kick

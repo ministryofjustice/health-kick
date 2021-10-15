@@ -1,26 +1,10 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+---
+# Environment specific values, override helm_deploy/health-kick/values.yaml
+generic-service:
+  ingress:
+    host: health-kick.prison.service.justice.gov.uk
 
-replicaCount: 4
-
-image:
-  repository: quay.io/hmpps/health-kick
-  tag: latest
-  pullPolicy: IfNotPresent
-  port: 3000
-
-ingress:
-  enabled: true
-  enable_whitelist: false
-  host: health-kick.prison.service.justice.gov.uk
-  cert_secret: health-kick-cert
-  path: /
-
-# determine which slack channel alerts are sent to, via the correct Alert Manager receiver
-generic-prometheus-alerts:
-  alertSeverity: digital-prison-service
-
-# CloudPlatform AlertManager receiver to route promethues alerts to slack
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
   alertSeverity: hmpps_tech
   ingressAlertsEnabled: false
