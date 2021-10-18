@@ -1,3 +1,5 @@
 node_modules/
 .env
 Dockerrun.aws.json
+helm_deploy/*/Chart.lock
+helm_deploy/*/charts/
