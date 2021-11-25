@@ -66,12 +66,15 @@ workflows:
                 - main
     jobs:
       - hmpps/npm_security_audit:
+          slack_channel: hmpps_tech_alerts_security
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
+          slack_channel: hmpps_tech_alerts_security
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          slack_channel: hmpps_tech_alerts_security
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -85,6 +88,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: hmpps_tech_alerts_security
           context:
             - veracode-credentials
             - hmpps-common-vars
