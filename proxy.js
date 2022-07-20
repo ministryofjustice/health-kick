@@ -69,9 +69,7 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
 });
 
 function validDomain(host) {
-  if (host.endsWith('.noms.dsd.io') || host.endsWith('.hmpps.dsd.io') || host.endsWith('.integration.dsd.io') || host.endsWith('.service.justice.gov.uk')) {
-    return true
-  } 
+  return (host.endsWith('.svc.cluster.local') || host.endsWith('.hmpps.dsd.io') || host.endsWith('.integration.dsd.io') || host.endsWith('.service.justice.gov.uk'))
 }
 
 module.exports = router;

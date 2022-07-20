@@ -58,6 +58,13 @@ describe('request proxying', () => {
       return request.get(`/http/status.github.com`)
         .expect(502, {error: 'denied'});
     });
+    it('should allow svc.cluster.local domain', () => {
+      scope = nock('http://status.svc.cluster.local')
+          .get('/health').reply(200, {message: 'found'});
+
+      return request.get(`/http/status.svc.cluster.local`)
+        .expect(200, {message: 'found'});
+    });
     it('should 504 if backend isn\'t reachable', () => {
       scope = nock('http://useful-app.hmpps.dsd.io')
         .get('/health').replyWithError('connection failed');
