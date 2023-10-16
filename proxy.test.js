@@ -27,7 +27,7 @@ describe('request proxying', () => {
       scope = nock('http://app-dev.hmpps.service.justice.gov.uk')
         .get('/health').reply(200, {healthy: true});
 
-      return request.get(`/http/app-dev.hmpps.service.justice.gov.uk`)
+      return request.get(`/http/app-dev.hmpps.service.justice.gov.uk/health`)
         .expect(200, {healthy: true});
     });
     it('should proxy a 302 with headers', () => {
@@ -36,7 +36,7 @@ describe('request proxying', () => {
           Location: '/somewhere'
         });
 
-      return request.get(`/http/app-stage.hmpps.service.justice.gov.uk`)
+      return request.get(`/http/app-stage.hmpps.service.justice.gov.uk/health`)
         .expect(302)
         .expect('Location', '/somewhere');
     });
@@ -44,14 +44,14 @@ describe('request proxying', () => {
       scope = nock('http://app.hmpps.service.justice.gov.uk')
         .get('/health').reply(404, {error: 'notfound'});
 
-      return request.get(`/http/app.hmpps.service.justice.gov.uk`)
+      return request.get(`/http/app.hmpps.service.justice.gov.uk/health`)
         .expect(404, {error: 'notfound'});
     });
     it('should proxy a 500', () => {
       scope = nock('http://something.hmpps.service.justice.gov.uk')
         .get('/health').reply(500, {error: 'it broke'});
 
-      return request.get(`/http/something.hmpps.service.justice.gov.uk`)
+      return request.get(`/http/something.hmpps.service.justice.gov.uk/health`)
         .expect(500, {error: 'it broke'});
     });
     it('should reject non hmpps.service.justice.gov.uk domain', () => {
@@ -62,7 +62,7 @@ describe('request proxying', () => {
       scope = nock('http://useful-app.hmpps.service.justice.gov.uk')
         .get('/health').replyWithError('connection failed');
 
-      return request.get(`/http/useful-app.hmpps.service.justice.gov.uk`)
+      return request.get(`/http/useful-app.hmpps.service.justice.gov.uk/health`)
         .expect(504, {error: 'connection failed'});
     });
   });
@@ -72,7 +72,7 @@ describe('request proxying', () => {
       scope = nock('https://app-dev.hmpps.service.justice.gov.uk')
         .get('/health').reply(200, {healthy: true});
 
-      return request.get(`/https/app-dev.hmpps.service.justice.gov.uk`)
+      return request.get(`/https/app-dev.hmpps.service.justice.gov.uk/health`)
         .expect(200, {healthy: true});
     });
     it('should proxy a 302 with headers', () => {
@@ -81,7 +81,7 @@ describe('request proxying', () => {
           Location: '/somewhere'
         });
 
-      return request.get(`/https/app-stage.hmpps.service.justice.gov.uk`)
+      return request.get(`/https/app-stage.hmpps.service.justice.gov.uk/health`)
         .expect(302)
         .expect('Location', '/somewhere');
     });
@@ -89,14 +89,14 @@ describe('request proxying', () => {
       scope = nock('https://app.service.hmpps.service.justice.gov.uk')
         .get('/health').reply(404, {error: 'notfound'});
 
-      return request.get(`/https/app.service.hmpps.service.justice.gov.uk`)
+      return request.get(`/https/app.service.hmpps.service.justice.gov.uk/health`)
         .expect(404, {error: 'notfound'});
     });
     it('should proxy a 500', () => {
       scope = nock('https://something.hmpps.service.justice.gov.uk')
         .get('/health').reply(500, {error: 'it broke'});
 
-      return request.get(`/https/something.hmpps.service.justice.gov.uk`)
+      return request.get(`/https/something.hmpps.service.justice.gov.uk/health`)
         .expect(500, {error: 'it broke'});
     });
     it('should reject non hmpps.service.justice.gov.uk domain', () => {
@@ -107,14 +107,14 @@ describe('request proxying', () => {
       scope = nock('https://useful-app.hmpps.service.justice.gov.uk')
         .get('/health').replyWithError('connection failed');
 
-      return request.get(`/https/useful-app.hmpps.service.justice.gov.uk`)
+      return request.get(`/https/useful-app.hmpps.service.justice.gov.uk/health`)
         .expect(504, {error: 'connection failed'});
     });
   });
 
   describe('other protocols', () => {
     it('shouldn\'t allow other protocols', () => {
-      return request.get(`/gopher/app-dev.hmpps.service.justice.gov.uk`)
+      return request.get(`/gopher/app-dev.hmpps.service.justice.gov.uk/health`)
         .expect(404);
     });
   });
