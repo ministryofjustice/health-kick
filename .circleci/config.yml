@@ -48,7 +48,7 @@ workflows:
           env: "prod"
           context:
             - hmpps-common-vars
-            - dps-toolkit
+            - health-kick-prod
           requires:
             - build_docker
 
