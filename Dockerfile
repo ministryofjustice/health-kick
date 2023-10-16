@@ -1,7 +1,13 @@
-FROM node:16.16-bullseye as builder
+FROM node:18.18-bullseye-slim as builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
+
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV GIT_REF=${GIT_REF}
+
+RUN test -n "$BUILD_NUMBER" || (echo "BUILD_NUMBER not set" && false)
+RUN test -n "$GIT_REF" || (echo "GIT_REF not set" && false)
 
 RUN apt-get update && \
     apt-get upgrade -y
@@ -17,7 +23,7 @@ RUN npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:16.16-bullseye-slim
+FROM node:18.18-bullseye-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apt-get update && \

@@ -3,7 +3,6 @@
 generic-service:
   ingress:
     host: health-kick.prison.service.justice.gov.uk
-    contextColour: green
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:

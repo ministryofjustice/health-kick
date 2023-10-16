@@ -20,32 +20,17 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
   }
 
   switch(req.params.probe) {
-    case "grafana":
-        var path = "/api/health"
-        break;
-    case "prometheus":
-        var path = "/prometheus/-/healthy"
-        break;
-    case "alertmanager":
-        var path = "/alertmanager/-/healthy"
-        break;
     case "info":
       var path = "/info"
       break;
-    case "communityapi-info":
-      var path = "/communityapi/info"
-      break;
-    case "communityapi-health":
-      var path = "/communityapi/health"
-      break;
-    case "communityapi":
-      var path = "/communityapi/health"
+    case "health":
+      var path = "/health"
       break;
     default:
-        var path = "/health"
+      return res.status(502).json({error: 'denied'});
   }
 
-  const start = process.hrtime();
+  const start = process.hrtime.bigint();
   const target = url.format({
     protocol: req.params.protocol,
     host: host,
@@ -63,13 +48,13 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
     res.json({error: err.message});
   });
   function addDurationHeader() {
-    const duration = convertHrtime(process.hrtime(start)).milliseconds;
+    const duration = convertHrtime(process.hrtime.bigint() - start).milliseconds
     res.set('X-Health-Duration', String(duration));
   }
 });
 
 function validDomain(host) {
-  return (host.endsWith('.svc.cluster.local') || host.endsWith('.hmpps.dsd.io') || host.endsWith('.integration.dsd.io') || host.endsWith('.service.justice.gov.uk'))
+  return (host.endsWith('.svc.cluster.local') || host.endsWith('service.justice.gov.uk')) && /[a-z0-9-.]+/.test(host)
 }
 
 module.exports = router;
