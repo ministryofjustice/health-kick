@@ -3,6 +3,15 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@7
 
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps-sre-alerts
+
+  releases-slack-channel:
+    type: string
+    default: dps-releases
+
 jobs:
   validate:
     executor:
@@ -46,6 +55,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
             - hmpps-common-vars
             - health-kick-prod
@@ -62,15 +73,15 @@ workflows:
                 - main
     jobs:
       - hmpps/npm_security_audit:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -84,7 +95,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: hmpps_tech_alerts_security
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
