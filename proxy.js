@@ -23,11 +23,8 @@ router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
     case "info":
       var path = "/info"
       break;
-    case "health":
-      var path = "/health"
-      break;
     default:
-      return res.status(502).json({error: 'denied'});
+      var path = "/health"
   }
 
   const start = process.hrtime.bigint();
