@@ -16,7 +16,7 @@ app.get('/health', (req, res) => {
 app.use(require('./proxy'));
 
 app.use((req, res) => {
-  res.status = 404;
+  res.status(404);
   res.json({error: "not-found"});
 });
 
