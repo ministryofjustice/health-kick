@@ -13,18 +13,20 @@ const proxySettings = {
 
 const router = express.Router();
 
-router.get('/:protocol(http|https)/:host/:probe?', (req, res, next) => {
+router.get('/:protocol(http|https)/:host/:probe(*)?', (req, res, next) => {
   const host = req.params.host;
   if (!validDomain(host)) {
     return res.status(502).json({error: 'denied'});
   }
 
-  switch(req.params.probe) {
-    case "info":
-      var path = "/info"
-      break;
-    default:
-      var path = "/health"
+  if (req.params.probe === 'info') {
+    var path = "/info"
+  } else if (req.params.probe === 'health') {
+    var path = "/health"
+  } else if (req.params.probe === "" || req.params.probe === undefined) {
+    var path = "/health"
+  } else {
+    return res.status(502).json({error: 'invalid probe path'});
   }
 
   const start = process.hrtime.bigint();
