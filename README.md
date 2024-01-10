@@ -4,7 +4,7 @@ Highly specific HTTP proxy for exposing health endpoints that live behind firewa
 
 ### Setup
 
- * NodeJS 12+
+ * NodeJS 20+
  * `npm install`
 
 ### Config

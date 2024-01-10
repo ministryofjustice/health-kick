@@ -16,7 +16,7 @@ jobs:
   validate:
     executor:
       name: hmpps/node
-      tag: 18.18-browsers
+      tag: 20.10-browsers
     steps:
       - checkout
       - restore_cache:
