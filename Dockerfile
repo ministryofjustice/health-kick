@@ -23,7 +23,7 @@ RUN npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:20-bullseye-slim
+FROM node:20-bookworm-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apt-get update && \
