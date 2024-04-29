@@ -24,7 +24,7 @@
     "audit-ci": "^6.6.1",
     "jest": "^29.7.0",
     "nock": "^13.5.4",
-    "supertest": "^6.3.4"
+    "supertest": "^7.0.0"
   },
   "jest": {
     "testEnvironment": "node",
