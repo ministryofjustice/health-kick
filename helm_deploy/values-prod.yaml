@@ -6,5 +6,5 @@ generic-service:
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 generic-prometheus-alerts:
-  alertSeverity: hmpps_tech
+  alertSeverity: hmpps-sre-alerts-prod
   ingressAlertsEnabled: false
