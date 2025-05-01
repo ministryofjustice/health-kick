@@ -23,6 +23,10 @@ router.get('/:protocol(http|https)/:host/:probe(*)?', (req, res, next) => {
     var path = "/info"
   } else if (req.params.probe === 'health') {
     var path = "/health"
+  } else if (req.params.probe === 'auth-health') {
+    var path = "/auth/health"
+  } else if (req.params.probe === 'auth-info') {
+    var path = "/auth/info"
   } else if (req.params.probe === "" || req.params.probe === undefined) {
     var path = "/health"
   } else {
