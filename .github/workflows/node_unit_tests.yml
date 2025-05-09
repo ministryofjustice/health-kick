@@ -22,6 +22,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ${{ inputs.node_version_file }}
+      - name: update npm
+        shell: bash
+        run: |
+          sudo npm install -g npm@latest
       - name: unit tests
         id: unit-tests
         shell: bash
