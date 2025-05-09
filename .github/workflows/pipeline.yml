@@ -38,7 +38,7 @@ jobs:
   # generic node unit tests - feel free to override with local tests if required
   node_unit_tests:
     name: node unit tests
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_unit_tests.yml@v2 # WORKFLOW_VERSION
+    uses: ./.github/workflows/node_unit_tests.yml # LOCAL VERSION
     secrets: inherit
   build:
     name: Build docker image from hmpps-github-actions
