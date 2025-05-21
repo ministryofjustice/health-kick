@@ -1,0 +1,64 @@
+version: 2.1
+
+orbs:
+  hmpps: ministryofjustice/hmpps@11
+
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps-sre-alerts
+
+  releases-slack-channel:
+    type: string
+    default: dps-releases
+
+jobs:
+  validate:
+    executor:
+      name: hmpps/node
+      tag: 22.15-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          key: node_modules-{{ checksum "package-lock.json" }}-{{ checksum "package.json" }}
+      - run:
+          name: Install Dependencies
+          command: npm ci --no-audit
+      - save_cache:
+          key: node_modules-{{ checksum "package-lock.json" }}-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Run Tests
+          command: npm test -- --maxWorkers=2
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - validate:
+          filters:
+            tags:
+              ignore: /.*/
+      - hmpps/build_docker:
+          name: build_docker
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - validate
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          context:
+            - hmpps-common-vars
+            - health-kick-prod
+          requires:
+            - build_docker
