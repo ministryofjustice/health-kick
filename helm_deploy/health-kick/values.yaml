@@ -4,7 +4,7 @@ generic-service:
   nameOverride: health-kick
 
   image:
-    repository: quay.io/hmpps/health-kick
+    repository: ghcr.io/ministryofjustice/health-kick
     tag: latest
     port: 3000
 
