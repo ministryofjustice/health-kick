@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"  # or "yarn" if you're using Yarn
+    directory: "/"            # Adjust if your package.json is in a subdirectory
+    schedule:
+      interval: "weekly"      # Options: "daily", "weekly", "monthly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+  - package-ecosystem: "github-actions"
+    directory: "/"  # Location of workflow files
+    schedule:
+      interval: "weekly"
