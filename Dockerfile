@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS builder
+FROM node:24-bookworm-slim AS builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -23,7 +23,7 @@ RUN npm ci --no-audit && \
 
 RUN npm prune --production
 
-FROM node:22-bookworm-slim
+FROM node:24-bookworm-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apt-get update && \
