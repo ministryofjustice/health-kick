@@ -12,3 +12,7 @@ updates:
     directory: "/"  # Location of workflow files
     schedule:
       interval: "weekly"
+  - package-ecosystem: "helm"
+    directory: "/helm_deploy/health-kick"
+    schedule:
+      interval: "weekly"
