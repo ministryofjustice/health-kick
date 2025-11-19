@@ -16,3 +16,7 @@ updates:
     directory: "/helm_deploy/health-kick"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
