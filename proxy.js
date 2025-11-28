@@ -101,14 +101,8 @@ router.get(['/:protocol/:host', '/:protocol/:host/:probe'], (req, res) => {
 
     proxyRes.on('end', () => {
       if (!res.headersSent) {
-        // Pass through 5xx errors to indicate backend health issues
-        if (proxyRes.statusCode >= 500 && proxyRes.statusCode < 600) {
-          res.writeHead(proxyRes.statusCode, allowedHeaders)
-          res.end(Buffer.concat(chunks))
-        } else {
-          res.writeHead(proxyRes.statusCode, allowedHeaders)
-          res.end(Buffer.concat(chunks))
-        }
+        res.writeHead(proxyRes.statusCode, allowedHeaders)
+        res.end(Buffer.concat(chunks))
       }
     })
 
