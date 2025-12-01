@@ -16,8 +16,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm ci --no-audit && \
-    export BUILD_NUMBER=${BUILD_NUMBER} && \
+RUN npm run setup
+RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
 

@@ -22,19 +22,15 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: ${{ inputs.node_version_file }}
-      - name: update npm
-        shell: bash
-        run: |
-          sudo npm install -g npm@latest
       - name: install dependencies
         shell: bash
         run: |
-          sudo npm install 
+          npm run setup
       - name: unit tests
         id: unit-tests
         shell: bash
         run: |
-          sudo npm run test
+          npm run test
         # continue-on-error: true
         # Replacing the above with if: always()
       - name: upload the artifacts

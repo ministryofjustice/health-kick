@@ -3,6 +3,8 @@ const express = require('express')
 const httpProxy = require('http-proxy')
 const convertHrtime = require('./convert-hrtime')
 
+const MAX_RESPONSE_SIZE = 3 * 1024 // 3KB limit for health endpoints
+
 const proxySettings = {
   secure: true,
   xfwd: true,
@@ -15,8 +17,8 @@ const router = express.Router()
 
 router.get(['/:protocol/:host', '/:protocol/:host/:probe'], (req, res) => {
   const protocol = req.params.protocol
-  if (protocol !== 'http' && protocol !== 'https') {
-    return res.status(404).json({error: 'not found'})
+  if (protocol !== 'https') {
+    return res.status(400).json({error: 'only https protocol is permitted'})
   }
 
   const host = req.params.host
@@ -49,13 +51,73 @@ router.get(['/:protocol/:host', '/:protocol/:host/:probe'], (req, res) => {
   })
   console.log("Proxying request to %s", target)
   const proxy = httpProxy.createProxyServer(proxySettings)
-  proxy.web(req, res, { target })
-  proxy.on('proxyRes', () => {
+  proxy.web(req, res, { target, selfHandleResponse: true })
+  proxy.on('proxyRes', (proxyRes) => {
     addDurationHeader()
+
+    // Strip potentially sensitive headers from backend response
+    const sensitiveHeaders = [
+      'set-cookie', 'cookie', 'authorization', 'x-auth-token', 'x-api-key',
+      'x-csrf-token', 'x-forwarded-for', 'x-real-ip', 'server', 'x-powered-by'
+    ]
+    sensitiveHeaders.forEach(header => delete proxyRes.headers[header])
+
+    // Only allow specific safe headers and Content-Type
+    const allowedHeaders = {}
+    const safeHeaders = ['content-type', 'content-length', 'cache-control']
+    safeHeaders.forEach(header => {
+      if (proxyRes.headers[header]) {
+        allowedHeaders[header] = proxyRes.headers[header]
+      }
+    })
+
+    // Validate Content-Type is JSON or plain text (health endpoints should return these)
+    const contentType = proxyRes.headers['content-type'] || ''
+    if (!contentType.includes('application/json') &&
+        !contentType.includes('text/plain') &&
+        !contentType.includes('application/vnd.spring-boot.actuator')) {
+      proxyRes.destroy()
+      if (!res.headersSent) {
+        res.status(502).json({error: 'Invalid response type from backend, should be json or plain text'})
+      }
+      return
+    }
+
+    // Limit response size to prevent data exfiltration
+    let responseSize = 0
+    const chunks = []
+
+    proxyRes.on('data', (chunk) => {
+      responseSize += chunk.length
+      if (responseSize > MAX_RESPONSE_SIZE) {
+        proxyRes.destroy()
+        if (!res.headersSent) {
+          res.status(502).json({error: 'Response too large'})
+        }
+        return
+      }
+      chunks.push(chunk)
+    })
+
+    proxyRes.on('end', () => {
+      if (!res.headersSent) {
+        res.writeHead(proxyRes.statusCode, allowedHeaders)
+        res.end(Buffer.concat(chunks))
+      }
+    })
+
+    proxyRes.on('error', () => {
+      if (!res.headersSent) {
+        res.status(502).json({error: 'Error reading backend response'})
+      }
+    })
   })
   proxy.on('error', (err) => {
     addDurationHeader()
-    res.status(504).json({error: err.message})
+    // Don't expose internal error details
+    if (!res.headersSent) {
+      res.status(504).json({error: 'Gateway timeout'})
+    }
   })
   function addDurationHeader() {
     const duration = convertHrtime(process.hrtime.bigint() - start).milliseconds
