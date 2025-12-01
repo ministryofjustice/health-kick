@@ -91,8 +91,8 @@ describe('request proxying', () => {
     })
 
     it('should reject response exceeding size limit', () => {
-      // Create a response larger than MAX_RESPONSE_SIZE (10KB)
-      const largeResponse = {data: 'x'.repeat(11 * 1024)}
+      // Create a response larger than MAX_RESPONSE_SIZE (20KB)
+      const largeResponse = {data: 'x'.repeat(21 * 1024)}
       
       nock('https://large-response.hmpps.service.justice.gov.uk')
         .get('/health').reply(200, largeResponse)
