@@ -3,7 +3,7 @@ const express = require('express')
 const httpProxy = require('http-proxy')
 const convertHrtime = require('./convert-hrtime')
 
-const MAX_RESPONSE_SIZE = 3 * 1024 // 3KB limit for health endpoints
+const MAX_RESPONSE_SIZE = 10 * 1024 // 10KB limit for health endpoints
 
 const proxySettings = {
   secure: true,

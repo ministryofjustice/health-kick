@@ -89,5 +89,16 @@ describe('request proxying', () => {
       return request.get(`/https/useful-app.hmpps.service.justice.gov.uk/health`)
         .expect(504, {error: 'Gateway timeout'})
     })
+
+    it('should reject response exceeding size limit', () => {
+      // Create a response larger than MAX_RESPONSE_SIZE (10KB)
+      const largeResponse = {data: 'x'.repeat(11 * 1024)}
+      
+      nock('https://large-response.hmpps.service.justice.gov.uk')
+        .get('/health').reply(200, largeResponse)
+
+      return request.get(`/https/large-response.hmpps.service.justice.gov.uk/health`)
+        .expect(502, {error: 'Response too large'})
+    })
   })
 })
