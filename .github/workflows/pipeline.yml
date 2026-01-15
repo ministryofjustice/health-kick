@@ -43,6 +43,9 @@ jobs:
   build:
     name: Build docker image from hmpps-github-actions
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
+    needs:
+    - node_unit_tests
+    - helm_lint
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
