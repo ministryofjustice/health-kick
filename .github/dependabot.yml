@@ -1,6 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: "npm"  # or "yarn" if you're using Yarn
+    cooldown:
+      default-days: 7
     directory: "/"            # Adjust if your package.json is in a subdirectory
     schedule:
       interval: "weekly"      # Options: "daily", "weekly", "monthly"
@@ -17,6 +19,8 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "docker"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
