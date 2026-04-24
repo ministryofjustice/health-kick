@@ -9,6 +9,9 @@ ENV GIT_REF=${GIT_REF}
 RUN test -n "$BUILD_NUMBER" || (echo "BUILD_NUMBER not set" && false)
 RUN test -n "$GIT_REF" || (echo "GIT_REF not set" && false)
 
+RUN apk update && \
+    apk upgrade
+
 WORKDIR /app
 
 COPY . .
@@ -23,7 +26,9 @@ RUN npm prune --production
 FROM node:24-alpine
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-RUN apk add --no-cache tzdata
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache tzdata
 
 RUN addgroup -S -g 2000 appgroup && \
     adduser -S -u 2000 -G appgroup appuser
