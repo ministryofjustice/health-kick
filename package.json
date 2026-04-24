@@ -21,7 +21,7 @@
     "morgan": "^1.10.1"
   },
   "devDependencies": {
-    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
+    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.4",
     "@types/jest": "^30.0.0",
     "audit-ci": "^7.1.0",
     "jest": "^30.3.0",
