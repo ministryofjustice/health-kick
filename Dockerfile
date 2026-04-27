@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim AS builder
+FROM node:24-alpine AS builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -9,8 +9,8 @@ ENV GIT_REF=${GIT_REF}
 RUN test -n "$BUILD_NUMBER" || (echo "BUILD_NUMBER not set" && false)
 RUN test -n "$GIT_REF" || (echo "GIT_REF not set" && false)
 
-RUN apt-get update && \
-    apt-get upgrade -y
+RUN apk update && \
+    apk upgrade
 
 WORKDIR /app
 
@@ -23,16 +23,15 @@ RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
 
 RUN npm prune --production
 
-FROM node:24-bookworm-slim
+FROM node:24-alpine
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache tzdata
 
-RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser --gid 2000
+RUN addgroup -S -g 2000 appgroup && \
+    adduser -S -u 2000 -G appgroup appuser
 
 ENV TZ=Europe/London
 RUN ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && echo "$TZ" > /etc/timezone
