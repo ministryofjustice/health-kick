@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "00 17 * * MON-FRI"
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   security-snyk-check:
     name: Project security Snyk dependency check
