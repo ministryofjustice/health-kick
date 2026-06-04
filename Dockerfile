@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 ARG BUILD_NUMBER
 ARG GIT_REF
@@ -26,7 +26,7 @@ RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
 
 RUN npm prune --no-audit --no-fund --omit=dev
 
-FROM node:24-alpine
+FROM node:26-alpine
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 RUN apk update && \
