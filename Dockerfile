@@ -14,14 +14,17 @@ RUN apk update && \
 
 WORKDIR /app
 
+COPY package*.json .allowed-scripts.mjs .npmrc ./
+RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm run setup
+ENV NODE_ENV='production'
+
 COPY . .
 
-RUN npm run setup
 RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
     export GIT_REF=${GIT_REF} && \
     npm run record-build-info
 
-RUN npm prune --production
+RUN npm prune --no-audit --no-fund --omit=dev
 
 FROM node:24-alpine
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"

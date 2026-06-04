@@ -8,3 +8,5 @@ README.md
 .git
 .circleci
 tests
+!.allowed-scripts.mjs
+!.npmrc
